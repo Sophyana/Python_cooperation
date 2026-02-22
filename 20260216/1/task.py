@@ -31,6 +31,48 @@ def two_arg(repo_path, branch_name):
     content = find_commit(repo_path, commit[:-1])
     print(content)
 
+    tree_walk(repo_path, content)
+    print("")
+
+    with open(f"{repo_path}/.git/logs/refs/heads/{branch_name}", "r") as f:
+        log = f.read()
+
+    for el in log.split("\n")[:-1]:
+        commit_hash = el.split(" ")[1]
+        print(f"TREE for commit {commit_hash}")
+        tree_walk(repo_path, find_commit(repo_path, commit_hash))
+
+def tree_walk(repo_path, content):
+    tree = content.split("\n")[0].split(" ")[1]
+    with open(f"{repo_path}/.git/objects/{tree[:2]}/{tree[2:]}", "rb") as f:
+        tree_content = f.read()
+
+    branches = zlib.decompress(tree_content)
+    obj_type, _, data = branches.partition(b"\x00")
+
+    index = 0
+    result = []
+    git_modes = {
+        "100644": "blob",
+        "40000": "tree"
+    }
+
+    while index < len(data):
+        mode_end = data.find(b" ", index)
+        mode = data[index:mode_end].decode()
+        index = mode_end + 1
+
+        name_end = data.find(b"\x00", index)
+        name = data[index:name_end].decode()
+        index = name_end + 1
+
+        sha1 = data[index:index + 20]
+        index += 20
+
+        sha1_hex = sha1.hex()
+        result.append(f"{git_modes.get(mode, 'Неизвестный тип')} {sha1_hex}    {name} ")
+
+    print("\n".join(result))
 
 if len(sys.argv) < 2:
     print("Использование: script.py <путь_к_каталогу> [<имя_ветки>]")
