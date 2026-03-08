@@ -75,6 +75,7 @@ def process_addmon(args):
         print("Replaced the old monster")
 
 
+print("<<< Welcome to Python-MUD 0.1 >>>")
 while line := sys.stdin.readline().strip():
     chunks = line.split()
     command = chunks[0]
