@@ -1,6 +1,7 @@
 import sys
 from io import StringIO
 from cowsay import read_dot_cow, cowthink
+import shlex
 import cowsay
 
 FIELD_SIZE = 10
@@ -77,7 +78,7 @@ def process_addmon(args):
 
 print("<<< Welcome to Python-MUD 0.1 >>>")
 while line := sys.stdin.readline().strip():
-    chunks = line.split()
+    chunks = shlex.split(line)
     command = chunks[0]
     args = chunks[1:]
 
