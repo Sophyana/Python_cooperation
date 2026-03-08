@@ -2,7 +2,6 @@ import sys
 from io import StringIO
 from cowsay import read_dot_cow, cowthink
 import shlex
-import cowsay
 
 FIELD_SIZE = 10
 monsters = {}
@@ -27,7 +26,7 @@ custom_monsters = {"jgsbat": jgsbat}
 
 def encounter(x, y):
     if (x, y) in monsters:
-        name, hello = monsters[(x, y)]
+        name, hello, _ = monsters[(x, y)]
         if name in custom_monsters:
             print(cowthink(hello, cowfile=custom_monsters[name]))
         else:
@@ -50,30 +49,51 @@ def process_move(direction):
 
 
 def process_addmon(args):
-    if len(args) != 4:
-        print("Invalid arguments")
-        return
+    params = {}
+    param_names = ["hello", "hp", "coords"]
     try:
+
         name = args[0]
-        x = int(args[1])
-        y = int(args[2])
-        hello = args[3]
+
+        i = 1
+        while i < (len(args)):
+            param_name = args[i]
+            if param_name in param_names:
+                if param_name == "coords":
+                    params[param_name] = (args[i + 1], args[i + 2])
+                    i += 3
+                else:
+                    params[param_name] = args[i + 1]
+                    i += 2
+            else:
+                print(f"Unknown parameter: {param_name}")
+                return
+
+        if not all(param in params for param in param_names):
+            print("Please write all parameters: hello, hp, coords")
+            return
+
+        hello = params["hello"]
+        hp = int(params["hp"])
+        coords = params["coords"]
+
+        if len(coords) != 2:
+            print("Invalid coordinates")
+            return
+        x, y = int(coords[0]), int(coords[1])
+
+        replaced = False
+        if (x, y) in monsters:
+            replaced = True
+
+        monsters[(x, y)] = (name, hello, hp)
+        print(f"Added monster {name} to ({x}, {y}) saying {hello} with {hp} HP")
+        if replaced:
+            print("Replaced the old monster")
+
     except ValueError:
         print("Invalid arguments")
         return
-
-    if name not in cowsay.CHARS.keys() and name not in custom_monsters:
-        print("Cannot add unknown monster")
-        return
-
-    replaced = False
-    if (x, y) in monsters:
-        replaced = True
-
-    monsters[(x, y)] = (name, hello)
-    print(f"Added monster {name} to ({x}, {y}) saying {hello}")
-    if replaced:
-        print("Replaced the old monster")
 
 
 print("<<< Welcome to Python-MUD 0.1 >>>")
