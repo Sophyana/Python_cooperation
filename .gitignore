@@ -1,2 +1,6 @@
 .DS_Store
 GIt.rtf
+__pycache__/
+**/Pipfile.lock
+**/build/
+.doit.db.db
