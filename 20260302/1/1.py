@@ -9,7 +9,7 @@ player_x, player_y = 0, 0
 def encounter(x, y):
     if (x, y) in monsters:
         name, hello = monsters[(x, y)]
-        cowsay.cow(hello)
+        cowsay.draw(hello, cowsay.CHARS[name])
 
 
 def process_move(direction):
