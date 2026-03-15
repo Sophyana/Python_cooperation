@@ -115,11 +115,19 @@ EOC
 
     def do_attack(self, arg):
         """Attack the monster in the current cell."""
+        args = shlex.split(arg)
+        if not args:
+            print("Usage: attack <monster_name>")
+            return
+        monster_name = args[0]
         x, y = self.player_x, self.player_y
         if (x, y) not in self.monsters:
             print("No monster here")
             return
         name, hello, hp = self.monsters[(x, y)]
+        if monster_name != name:
+            print(f"No {monster_name} here")
+            return
         damage = min(10, hp)
         hp -= damage
         print(f"Attacked {name}, damage {damage} hp")
@@ -129,6 +137,13 @@ EOC
         else:
             self.monsters[(x, y)] = (name, hello, hp)
             print(f"{name} now has {hp}")
+
+    def complete_attack(self, text, line, begidx, endidx):
+        words = (line[:endidx] + ".").split()
+        if len(words) == 2:
+            all_monsters = list(self.custom_monsters.keys()) + list_cows()
+            return [c for c in all_monsters if c.startswith(text)]
+        return []
 
 
 if __name__ == "__main__":
