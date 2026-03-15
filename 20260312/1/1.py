@@ -117,6 +117,7 @@ EOC
     def do_attack(self, arg):
         """Attack the monster in the current cell."""
         args = shlex.split(arg)
+        monster_name = None
         weapon = "sword"
         if "with" in args:
             with_idx = args.index("with")
@@ -124,11 +125,18 @@ EOC
                 print("Unknown weapon")
                 return
             weapon = args[with_idx + 1]
+            if with_idx > 0:
+                monster_name = args[0]
+        elif args:
+            monster_name = args[0]
         x, y = self.player_x, self.player_y
         if (x, y) not in self.monsters:
             print("No monster here")
             return
         name, hello, hp = self.monsters[(x, y)]
+        if monster_name and monster_name != name:
+            print(f"No {monster_name} here")
+            return
         damage = min(self.weapons[weapon], hp)
         hp -= damage
         print(f"Attacked {name}, damage {damage} hp")
@@ -141,10 +149,14 @@ EOC
 
     def complete_attack(self, text, line, begidx, endidx):
         words = (line[:endidx] + ".").split()
-        if len(words) == 2:
-            return [c for c in ["with"] if c.startswith(text)]
-        elif len(words) == 3:
-            return [c for c in self.weapons if c.startswith(text)]
+        match len(words):
+            case 2:
+                all_monsters = list(self.custom_monsters.keys()) + list_cows()
+                return [c for c in all_monsters if c.startswith(text)]
+            case 3:
+                return [c for c in ["with"] if c.startswith(text)]
+            case 4:
+                return [c for c in self.weapons if c.startswith(text)]
         return []
 
 
