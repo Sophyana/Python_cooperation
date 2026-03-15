@@ -113,5 +113,23 @@ EOC
             return
 
 
+    def do_attack(self, arg):
+        """Attack the monster in the current cell."""
+        x, y = self.player_x, self.player_y
+        if (x, y) not in self.monsters:
+            print("No monster here")
+            return
+        name, hello, hp = self.monsters[(x, y)]
+        damage = min(10, hp)
+        hp -= damage
+        print(f"Attacked {name}, damage {damage} hp")
+        if hp == 0:
+            del self.monsters[(x, y)]
+            print(f"{name} died")
+        else:
+            self.monsters[(x, y)] = (name, hello, hp)
+            print(f"{name} now has {hp}")
+
+
 if __name__ == "__main__":
     Game().cmdloop()
