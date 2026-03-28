@@ -1,0 +1,107 @@
+From fb6552104ab3cec1e61d0034e2413159bf5e272c Mon Sep 17 00:00:00 2001
+From: Sophyana <sophya_esaulenko@mail.ru>
+Date: Sun, 22 Mar 2026 19:00:46 +0300
+Subject: [PATCH 1/3] server: implement MUD game server with simplified
+ protocol
+
+Protocol (client->server):
+  move <dx> <dy>
+  addmon <name> <x> <y> <hp> <hello>
+  attack <monster_name> <damage>
+
+Protocol (server->client):
+  ok <x> <y> | encounter <x> <y> <name> <hello>
+  added | replaced
+  no_monster | wrong_monster | damaged <dmg> <hp> | killed <dmg>
+---
+ 20260316/1/server.py | 78 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 78 insertions(+)
+ create mode 100644 20260316/1/server.py
+
+diff --git a/20260316/1/server.py b/20260316/1/server.py
+new file mode 100644
+index 0000000..2649a84
+--- /dev/null
++++ b/20260316/1/server.py
+@@ -0,0 +1,78 @@
++import asyncio
++import shlex
++
++FIELD_SIZE = 10
++
++
++class GameState:
++    def __init__(self):
++        self.player_x = 0
++        self.player_y = 0
++        self.monsters = {}  # (x, y) -> (name, hello, hp)
++
++    def move(self, dx, dy):
++        self.player_x = (self.player_x + dx) % FIELD_SIZE
++        self.player_y = (self.player_y + dy) % FIELD_SIZE
++        x, y = self.player_x, self.player_y
++        if (x, y) in self.monsters:
++            name, hello, hp = self.monsters[(x, y)]
++            return f"encounter {x} {y} {shlex.quote(name)} {shlex.quote(hello)}"
++        return f"ok {x} {y}"
++
++    def addmon(self, name, x, y, hp, hello):
++        replaced = (x, y) in self.monsters
++        self.monsters[(x, y)] = (name, hello, hp)
++        return "replaced" if replaced else "added"
++
++    def attack(self, monster_name, damage):
++        x, y = self.player_x, self.player_y
++        if (x, y) not in self.monsters:
++            return "no_monster"
++        name, hello, hp = self.monsters[(x, y)]
++        if name != monster_name:
++            return "wrong_monster"
++        new_hp = hp - damage
++        if new_hp <= 0:
++            del self.monsters[(x, y)]
++            return f"killed {damage}"
++        self.monsters[(x, y)] = (name, hello, new_hp)
++        return f"damaged {damage} {new_hp}"
++
++
++async def handle_client(reader, writer):
++    state = GameState()
++    while True:
++        line = await reader.readline()
++        if not line:
++            break
++        command = line.decode().strip()
++        if not command:
++            continue
++        parts = shlex.split(command)
++        cmd = parts[0]
++        if cmd == "exit":
++            break
++        elif cmd == "move":
++            response = state.move(int(parts[1]), int(parts[2]))
++        elif cmd == "addmon":
++            # addmon <name> <x> <y> <hp> <hello>
++            name, x, y, hp, hello = parts[1], int(parts[2]), int(parts[3]), int(parts[4]), parts[5]
++            response = state.addmon(name, x, y, hp, hello)
++        elif cmd == "attack":
++            # attack <monster_name> <damage>
++            response = state.attack(parts[1], int(parts[2]))
++        else:
++            response = "unknown_command"
++        writer.write((response + "\n").encode())
++        await writer.drain()
++    writer.close()
++    await writer.wait_closed()
++
++
++async def main():
++    server = await asyncio.start_server(handle_client, "127.0.0.1", 1337)
++    async with server:
++        await server.serve_forever()
++
++
++asyncio.run(main())
+-- 
+2.39.5 (Apple Git-154)
+
