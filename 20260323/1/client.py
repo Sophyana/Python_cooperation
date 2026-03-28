@@ -1,177 +1,255 @@
-import socket
-import shlex
 from io import StringIO
-from cowsay import cowthink, list_cows, read_dot_cow
+from cowsay import read_dot_cow, list_cows
+import shlex
+import sys
+import cmd
+import readline
+import asyncio
+from prompt_toolkit.history import InMemoryHistory
+from prompt_toolkit.patch_stdout import patch_stdout
+from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit import PromptSession
 
-HOST = "127.0.0.1"
-PORT = 1337
 
-FIELD_SIZE = 10
-
-CUSTOM_MONSTERS = {
-    "jgsbat": read_dot_cow(StringIO(r"""
+class Game(cmd.Cmd):
+    prompt = ">> "
+    intro = "<<< Welcome to Python-MUD 0.1 >>>"
+    field_size = 10
+    custom_monsters = {
+        "jgsbat": read_dot_cow(StringIO(r"""
         $the_cow = <<EOC;
             ,_                    _,
             ) '-._  ,_    _,  _.-' (
-            )  _.-'.|\\--//|.'-._  (
+            )  _.-'.|\\\\--//|.'-._  (
              )'   .'\/o\/o\/'.   `(
               ) .' . \====/ . '. (
                )  / <<    >> \  (
                 '-._/``  ``\_.-'
-          jgs     __\\'--'//__
+          jgs     __\\\\'--'//__
                  (((""`  `"")))
         EOC
         """))
-}
-
-WEAPONS = {
-    "sword": 10,
-    "spear": 15,
-    "axe":   20,
-}
-
-MOVE_DELTAS = {
-    "up":    (0, -1),
-    "down":  (0,  1),
-    "left":  (-1, 0),
-    "right": (1,  0),
-}
+    }
 
 
-class MUDClient:
+history = InMemoryHistory()
+commands = ["addmon", "attack", "up", "down", "left", "right",
+            "exit", "status"]
+
+
+class DynamicCompleter(Completer):
     def __init__(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((HOST, PORT))
-        self.rfile = self.sock.makefile("r", buffering=1)
-        self.current_weapon = "sword"
+        self.commands_args = {
+            "addmon": ["hello", "hp", "coords"]
+        }
 
-    def _send(self, command):
-        self.sock.sendall((command + "\n").encode())
-        return self.rfile.readline().rstrip("\n")
+    def get_completions(self, document, complete_event):
+        text = document.text_before_cursor
 
-    def _handle_move(self, cmd):
-        dx, dy = MOVE_DELTAS[cmd]
-        response = self._send(f"move {dx} {dy}")
-        parts = shlex.split(response)
-        if parts[0] == "ok":
-            print(f"Moved to ({parts[1]}, {parts[2]})")
-        elif parts[0] == "encounter":
-            x, y, name, hello = parts[1], parts[2], parts[3], parts[4]
-            print(f"Moved to ({x}, {y})")
-            if name in CUSTOM_MONSTERS:
-                print(cowthink(hello, cowfile=CUSTOM_MONSTERS[name]))
-            else:
-                print(cowthink(hello, cow=name))
 
-    def _handle_addmon(self, arg):
-        usage = "Usage: addmon <NAME> hello <MSG> hp <HP> coords <X> <Y>"
-        args = shlex.split(arg)
-        if not args:
-            print(usage)
+        if not text:
+            for cmd in commands:
+                yield Completion(cmd, start_position=0)
             return
-        name = args[0]
-        if name not in list_cows() | set(CUSTOM_MONSTERS.keys()):
-            print(f"Unknown monster {name}")
-            return
-        params = {}
-        i = 1
+
         try:
-            while i < len(args):
-                if args[i] == "hello":
-                    params["hello"] = args[i + 1]
-                    i += 2
-                elif args[i] == "hp":
-                    params["hp"] = int(args[i + 1])
-                    i += 2
-                elif args[i] == "coords":
-                    params["x"] = int(args[i + 1])
-                    params["y"] = int(args[i + 2])
-                    i += 3
-                else:
-                    print(f"Unknown parameter: {args[i]}\n{usage}")
-                    return
-        except (IndexError, ValueError):
-            print(f"Invalid arguments\n{usage}")
+            words = shlex.split(text)
+        except ValueError:
             return
-        if not all(k in params for k in ("hello", "hp", "x", "y")):
-            print(f"Missing required parameters\n{usage}")
-            return
-        x, y = params["x"], params["y"]
-        if not (0 <= x < FIELD_SIZE and 0 <= y < FIELD_SIZE):
-            print(f"Coordinates out of bounds. Field is {FIELD_SIZE}x{FIELD_SIZE}")
-            return
-        response = self._send(
-            f"addmon {shlex.quote(name)} {x} {y} {params['hp']} {shlex.quote(params['hello'])}"
-        )
-        print(f"Added monster {name} at ({x}, {y}) saying {params['hello']} with {params['hp']} HP")
-        if response == "replaced":
-            print("Replaced the old monster")
 
-    def _handle_attack(self, arg):
-        usage = "Usage: attack <NAME> [with <WEAPON>]"
-        args = shlex.split(arg) if arg else []
-        if not args:
-            print(usage)
-            return
-        name = args[0]
-        weapon = self.current_weapon
-        if len(args) == 3 and args[1] == "with":
-            if args[2] not in WEAPONS:
-                print(f"Unknown weapon {args[2]}")
-                return
-            weapon = args[2]
-        elif len(args) != 1:
-            print(usage)
-            return
-        self.current_weapon = weapon
-        damage = WEAPONS[weapon]
-        response = self._send(f"attack {shlex.quote(name)} {damage}")
-        parts = response.split()
-        if parts[0] == "no_monster":
-            print("No monster here")
-        elif parts[0] == "wrong_monster":
-            print(f"No {name} here")
-        elif parts[0] == "damaged":
-            print(f"Attacked {name}, damage {parts[1]} hp")
-            print(f"{name} now has {parts[2]} hp")
-        elif parts[0] == "killed":
-            print(f"Attacked {name}, damage {parts[1]} hp")
-            print(f"{name} died")
+        match words:
 
-    def run(self):
-        print("<<< Welcome to Python-MUD 0.1 >>>")
+            case["addmon"]:
+                for monster in list_cows() | Game.custom_monsters.keys():
+                        yield Completion(monster, start_position=0)
+
+            case ["attack"]:
+                for monster in list_cows() | Game.custom_monsters.keys():
+                    yield Completion(monster, start_position=0)
+
+            case[first]:
+                for cmd in commands:
+                    if cmd.startswith(first) and first != cmd:
+                        yield Completion(cmd, start_position=-len(first))
+
+            case ["attack", name_monster]:
+                for monster in list_cows() | Game.custom_monsters.keys():
+                    if monster.startswith(name_monster):
+                        if name_monster == monster:
+                            yield Completion("with", start_position=0)
+                        else:
+                            yield Completion(monster, start_position=-len(name_monster))
+
+            case ["attack", name_monster, with_word]:
+                if "with".startswith(with_word):
+                    if with_word == "with":
+                        for w in ["sword", "axe", "spear"]:
+                            yield Completion(w, start_position=0)
+                    else:
+                        yield Completion("with", start_position=-len(with_word))
+
+            case ["attack", name_monster, "with", weapon]:
+                for w in ["sword", "axe", "bow"]:
+                    if w.startswith(weapon) and w != weapon:
+                        yield Completion(w, start_position=-len(weapon))
+            case ["addmon", name]:
+                for monster in list_cows() | Game.custom_monsters.keys():
+                    if monster.startswith(name):
+                        if name != monster:
+                            yield Completion(monster, start_position=-len(name))
+                        else:
+                            yield from self.complete_addmon_arguments(text)
+
+            case ["addmon", name, *_]:
+                yield from self.complete_addmon_arguments(text)
+
+    def complete_addmon_arguments(self, text):
+        words = shlex.split(text)
+        provided_args = set(words[1:])
+        last_word = words[-1] if words else ""
+        for arg in self.commands_args["addmon"]:
+            if arg not in provided_args:
+                if text.endswith((" ", "\t")) and last_word not in self.commands_args["addmon"]:
+                    yield Completion(arg, start_position=0)
+                if arg.startswith(last_word):
+                    yield Completion(arg, start_position=-len(last_word))
+
+
+completer = DynamicCompleter()
+
+
+class Client:
+    def __init__(self, username, host='localhost', port=8888):
+        self.host = host
+        self.port = port
+        self.username = username
+        self.history = InMemoryHistory()
+        self.completer = DynamicCompleter()
+        self.session = PromptSession(history=self.history, completer=self.completer)
+
+    async def run(self):
+        await self.connect()
+        await asyncio.gather(self.receive_messages(), self.send_messages())
+
+    async def connect(self):
+        self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
+        self.writer.write(self.username.encode() + b"\n")
+        await self.writer.drain()
+        response = (await self.reader.readline()).decode().strip()
+        if response != "SUCCESS":
+            self.writer.close()
+            await self.writer.wait_closed()
+            print("Player with this nickname already exists")
+            sys.exit(1)
+
+    async def send_messages(self):
+        loop = asyncio.get_running_loop()
+        try:
+            with patch_stdout():
+                while True:
+                    command = await loop.run_in_executor(None,
+                                lambda: self.session.prompt(">> "))
+                    if not command:
+                        continue
+
+                    test_command = shlex.split(command)
+                    namecommand = test_command[0]
+                    field_size = 10
+
+                    if namecommand not in commands:
+                        print("Unknown command")
+                        continue
+
+                    if command == 'exit':
+                        break
+
+                    if namecommand in ["up", "down", "left", "right"] and len(test_command) != 1:
+                        print("Invalid arguments")
+                        continue
+
+                    if namecommand == "addmon":
+                        usage = "Usage: addmon <NAME> hello <MESSAGE> hp <HP> coords <X> <Y>"
+                        args = test_command[1:]
+                        if not args:
+                            print(f"Invalid arguments\n{usage}")
+                            continue
+
+                        name = args[0]
+                        if name not in list_cows() | Game.custom_monsters.keys():
+                            print(f"Unknown monster {name}")
+                            continue
+
+                        params = {}
+                        param_names = ["hello", "hp", "coords"]
+                        expected_params = 3
+                        i = 1
+
+                        try:
+                            while i < len(args):
+                                if args[i] in param_names:
+                                    param = args[i]
+                                    if param == "coords":
+                                        params[param] = (int(args[i + 1]), int(args[i + 2]))
+                                        i += 3
+                                    else:
+                                        params[param] = args[i + 1]
+                                        i += 2
+                                else:
+                                    print(f"Invalid argument: {args[i]}\n{usage}")
+                                    continue
+
+                            if len(params) != expected_params:
+                                print(f"Invalid number of arguments\n{usage}")
+                                continue
+
+                            x, y = params['coords']
+                            if not (0 <= x < field_size and 0 <= y < field_size):
+                                print(f"Invalid coordinates\nField size is {field_size}x{field_size}")
+                                continue
+                        except (ValueError, IndexError):
+                            print(f"Invalid arguments\n{usage}")
+                            continue
+
+                    if test_command[0] == "attack":
+                        args = test_command[1:]
+                        weapons = {"sword", "spear", "axe"}
+                        try:
+                            if "with" == args[2] and args[3] not in weapons:
+                                print("Unknown weapon")
+                                continue
+                        except IndexError:
+                            print("Invalid argument")
+                            continue
+
+                    self.writer.write(f"{command}\n".encode())
+                    await self.writer.drain()
+        except (KeyboardInterrupt, EOFError):
+            print("\nClient is shutting down...")
+        finally:
+            self.writer.close()
+            await self.writer.wait_closed()
+            print("Disconnected.")
+
+    async def receive_messages(self):
         while True:
             try:
-                line = input(">> ")
-            except (EOFError, KeyboardInterrupt):
-                print()
-                self.sock.close()
-                return
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                parts = shlex.split(line)
-            except ValueError as e:
-                print(f"Parse error: {e}")
-                continue
-            cmd = parts[0]
-            if cmd == "exit":
-                self._send("exit")
-                break
-            elif cmd in MOVE_DELTAS:
-                if len(parts) != 1:
-                    print("This command takes no arguments")
-                    continue
-                self._handle_move(cmd)
-            elif cmd == "addmon":
-                self._handle_addmon(line[len(cmd):].strip())
-            elif cmd == "attack":
-                self._handle_attack(line[len(cmd):].strip())
-            else:
-                print(f"Unknown command: {cmd}")
-        self.sock.close()
+                msg = await self.reader.readline()
+                if not msg:
+                    break
+                print(msg.decode().rstrip('\n'))
+            except (KeyboardInterrupt, EOFError):
+                print("\nClient is shutting down...")
 
 
-if __name__ == "__main__":
-    MUDClient().run()
+if __name__ == '__main__':
+
+    if len(sys.argv) != 2:
+        print("Usage: python client.py <username>")
+        sys.exit(1)
+
+    username = sys.argv[1]
+
+    try:
+        asyncio.run(Client(username).run())
+    except KeyboardInterrupt:
+        print('Client stopped manually.')
