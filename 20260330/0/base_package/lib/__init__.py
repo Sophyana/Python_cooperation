@@ -1,0 +1,4 @@
+def output():
+	print("Message")
+
+

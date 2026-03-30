@@ -1,0 +1,2 @@
+[flake8] 
+ignore = E999, F403, F405
