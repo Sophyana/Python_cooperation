@@ -47,6 +47,11 @@ class Game(cmd.Cmd):
         for client in users.values():
             client.write(msg)
 
+    def do_sayall(self, message):
+        for client in users.values():
+            if client != self.writer:
+                client.write(f"{self.nickname}: {shlex.split(message)[0]}\n".encode())
+
     def do_exit(self, arg):
         self.writer.write(b"exit...\n")
         return b"exit\n"

@@ -34,7 +34,7 @@ class Game(cmd.Cmd):
 
 history = InMemoryHistory()
 commands = ["addmon", "attack", "up", "down", "left", "right",
-            "exit", "status"]
+            "exit", "status", "sayall"]
 
 
 class DynamicCompleter(Completer):
@@ -141,6 +141,8 @@ class Client:
             await self.writer.wait_closed()
             print("Player with this nickname already exists")
             sys.exit(1)
+        else:
+            print("<<< Welcome to Python-MUD 0.1 >>>")
 
     async def send_messages(self):
         loop = asyncio.get_running_loop()
@@ -162,6 +164,11 @@ class Client:
 
                     if command == 'exit':
                         break
+
+                    if namecommand == "sayall":
+                        if len(test_command) != 2:
+                            print("Invalid arguments")
+                            continue
 
                     if namecommand in ["up", "down", "left", "right"] and len(test_command) != 1:
                         print("Invalid arguments")
