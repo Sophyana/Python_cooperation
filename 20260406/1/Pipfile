@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 python-cowsay = "*"
 prompt-toolkit = "*"
+sphinx = "*"
+sphinx-autodoc-typehints = "*"
 
 [dev-packages]
 
