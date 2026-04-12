@@ -245,7 +245,7 @@ class Server:
         addr = ', '.join(str(sock.getsockname()) for sock in server.sockets)
         print(f'Working on {addr}')
 
-        asyncio.create_task(move_monsters_loop())
+        # asyncio.create_task(move_monsters_loop())
 
         async with server:
             await server.serve_forever()

@@ -103,10 +103,11 @@ completer = DynamicCompleter()
 class Client:
     """Класс клиента."""
 
-    def __init__(self, username, host=HOST, port=PORT):
+    def __init__(self, username, file_commands=None, host=HOST, port=PORT):
         """Инициализация клиента."""
         self.host = host
         self.port = port
+        self.file_commands = file_commands
         self.username = username
         self.history = InMemoryHistory()
         self.completer = DynamicCompleter()
@@ -136,87 +137,21 @@ class Client:
         loop = asyncio.get_running_loop()
         try:
             with patch_stdout():
-                while True:
-                    command = await loop.run_in_executor(None,
-                                                         lambda: self.session.prompt(">> "))
-                    if not command:
-                        continue
-
-                    test_command = shlex.split(command)
-                    namecommand = test_command[0]
-
-                    if namecommand not in commands:
-                        print("Unknown command")
-                        continue
-
-                    if command == 'exit':
-                        break
-
-                    if namecommand == "sayall":
-                        if len(test_command) != 2:
-                            print("Invalid arguments")
+                if self.file_commands:
+                    with open(self.file_commands, 'r') as file:
+                        commands_from_file = [line.rstrip('\n') for line in file.readlines()]
+                    for command in commands_from_file:
+                        await self.process_command(command)
+                        await asyncio.sleep(1)
+                else:
+                    while True:
+                        command = await loop.run_in_executor(None,
+                                                             lambda: self.session.prompt(">> "))
+                        if not command:
                             continue
-
-                    if namecommand in ["up", "down", "left", "right"] and len(test_command) != 1:
-                        print("Invalid arguments")
-                        continue
-
-                    if namecommand == "addmon":
-                        usage = "Usage: addmon <NAME> hello <MESSAGE> hp <HP> coords <X> <Y>"
-                        args = test_command[1:]
-                        if not args:
-                            print(f"Invalid arguments\n{usage}")
-                            continue
-
-                        name = args[0]
-                        if name not in list_cows() | CUSTOM_MONSTERS.keys():
-                            print(f"Unknown monster {name}")
-                            continue
-
-                        params = {}
-                        param_names = ["hello", "hp", "coords"]
-                        expected_params = 3
-                        i = 1
-
-                        try:
-                            while i < len(args):
-                                if args[i] in param_names:
-                                    param = args[i]
-                                    if param == "coords":
-                                        params[param] = (int(args[i + 1]), int(args[i + 2]))
-                                        i += 3
-                                    else:
-                                        params[param] = args[i + 1]
-                                        i += 2
-                                else:
-                                    print(f"Invalid argument: {args[i]}\n{usage}")
-                                    continue
-
-                            if len(params) != expected_params:
-                                print(f"Invalid number of arguments\n{usage}")
-                                continue
-
-                            x, y = params['coords']
-                            if not (0 <= x < FIELD_SIZE and 0 <= y < FIELD_SIZE):
-                                print(f"Invalid coordinates\nField size is {FIELD_SIZE}x{FIELD_SIZE}")
-                                continue
-                        except (ValueError, IndexError):
-                            print(f"Invalid arguments\n{usage}")
-                            continue
-
-                    if test_command[0] == "attack":
-                        args = test_command[1:]
-                        weapons = {"sword", "spear", "axe"}
-                        try:
-                            if "with" == args[2] and args[3] not in weapons:
-                                print("Unknown weapon")
-                                continue
-                        except IndexError:
-                            print("Invalid argument")
-                            continue
-
-                    self.writer.write(f"{command}\n".encode())
-                    await self.writer.drain()
+                        if command == 'exit':
+                            break
+                        await self.process_command(command)
         except (KeyboardInterrupt, EOFError):
             print("\nClient is shutting down...")
         finally:
@@ -235,16 +170,95 @@ class Client:
             except (KeyboardInterrupt, EOFError):
                 print("\nClient is shutting down...")
 
+    async def process_command(self, command):
+        """Обработка команды."""
+        test_command = shlex.split(command)
+        namecommand = test_command[0]
+
+        if namecommand not in commands:
+            print("Unknown command")
+            return
+
+        if command == "sayall":
+            if len(test_command) != 2:
+                print("Invalid arguments")
+                return
+
+        if namecommand in ["up", "down", "left", "right"] and len(test_command) != 1:
+            print("Invalid arguments")
+            return
+
+        if namecommand == "addmon":
+            usage = "Usage: addmon <NAME> hello <MESSAGE> hp <HP> coords <X> <Y>"
+            args = test_command[1:]
+            if not args:
+                print(f"Invalid arguments\n{usage}")
+                return
+
+            name = args[0]
+            if name not in list_cows() | CUSTOM_MONSTERS.keys():
+                print(f"Unknown monster {name}")
+                return
+
+            params = {}
+            param_names = ["hello", "hp", "coords"]
+            expected_params = 3
+            i = 1
+
+            try:
+                while i < len(args):
+                    if args[i] in param_names:
+                        param = args[i]
+                        if param == "coords":
+                            params[param] = (int(args[i + 1]), int(args[i + 2]))
+                            i += 3
+                        else:
+                            params[param] = args[i + 1]
+                            i += 2
+                    else:
+                        print(f"Invalid argument: {args[i]}\n{usage}")
+                        return
+
+                if len(params) != expected_params:
+                    print(f"Invalid number of arguments\n{usage}")
+                    return
+
+                x, y = params['coords']
+                if not (0 <= x < FIELD_SIZE and 0 <= y < FIELD_SIZE):
+                    print(f"Invalid coordinates\nField size is {FIELD_SIZE}x{FIELD_SIZE}")
+                    return
+            except (ValueError, IndexError):
+                print(f"Invalid arguments\n{usage}")
+                return
+
+        if test_command[0] == "attack":
+            args = test_command[1:]
+            weapons = {"sword", "spear", "axe"}
+            try:
+                if "with" == args[2] and args[3] not in weapons:
+                    print("Unknown weapon")
+                    return
+            except IndexError:
+                print("Invalid argument")
+                return
+
+        self.writer.write(f"{command}\n".encode())
+        await self.writer.drain()
+
 
 if __name__ == '__main__':
+    file_commands = None
+    if '--file' in sys.argv:
+        file_index = sys.argv.index('--file') + 1
+        if file_index < len(sys.argv):
+            file_commands = sys.argv[file_index]
 
-    if len(sys.argv) != 2:
-        print("Usage: python -m mood.client <username>")
+    if len(sys.argv) != 2 and file_commands is None:
+        print("Usage: python client.py <username>")
         sys.exit(1)
-
     username = sys.argv[1]
 
     try:
-        asyncio.run(Client(username).run())
+        asyncio.run(Client(username, file_commands).run())
     except KeyboardInterrupt:
         print('Client stopped manually.')
