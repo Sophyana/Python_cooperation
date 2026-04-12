@@ -4,9 +4,16 @@ import shlex
 import cmd
 import asyncio
 from ..common import HOST, PORT, FIELD_SIZE, CUSTOM_MONSTERS
+import random
 
 monsters = {}
 users = dict()
+DIRECTIONS = {
+    "right": (1, 0),
+    "left": (-1, 0),
+    "up": (0, -1),
+    "down": (0, 1)
+}
 
 
 class Game(cmd.Cmd):
@@ -154,6 +161,37 @@ class Game(cmd.Cmd):
                          f"{name_monster} now has {new_hp}\n".encode())
 
 
+async def move_monsters_loop():
+    """Циклическое перемещение монстров каждые 30 секунд."""
+    while True:
+        await asyncio.sleep(30)
+        success = False
+        coords_of_monsters = list(monsters.keys())
+        while not success:
+            if not coords_of_monsters:
+                break
+            old_x, old_y = random.choice(coords_of_monsters)
+            name, hello, hp = monsters[(old_x, old_y)]
+            direction = random.choice(list(DIRECTIONS.keys()))
+            dx, dy = DIRECTIONS[direction]
+            new_x = (old_x + dx) % FIELD_SIZE
+            new_y = (old_y + dy) % FIELD_SIZE
+            if (new_x, new_y) in monsters:
+                continue
+            del monsters[(old_x, old_y)]
+            monsters[(new_x, new_y)] = (name, hello, hp)
+            monster_moved_massage = f"{name} moved one cell {direction}\n".encode()
+            for client in users.values():
+                client.write(monster_moved_massage)
+                player = getattr(client, 'game', None)
+                if player and player.player_x == new_x and player.player_y == new_y:
+                    if name in CUSTOM_MONSTERS:
+                        client.write((cowthink(hello, cowfile=CUSTOM_MONSTERS[name]) + "\n").encode())
+                    else:
+                        client.write((cowthink(hello, cow=name) + "\n").encode())
+            success = True
+
+
 class Server:
     """Сервер."""
 
@@ -182,6 +220,7 @@ class Server:
             await writer.drain()
 
         game = Game(writer, username)
+        writer.game = game
         try:
             while True:
                 msg = await reader.readline()
@@ -205,6 +244,8 @@ class Server:
         server = await asyncio.start_server(self.handle_client, self.host, self.port)
         addr = ', '.join(str(sock.getsockname()) for sock in server.sockets)
         print(f'Working on {addr}')
+
+        asyncio.create_task(move_monsters_loop())
 
         async with server:
             await server.serve_forever()
