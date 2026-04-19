@@ -24,9 +24,10 @@ class Game(cmd.Cmd):
     и управление логикой игры.
     """
 
-    def __init__(self, writer, nickname):
+    def __init__(self, server, writer, nickname):
         """Инициализация игры."""
         super().__init__()
+        self.server = server
         self.player_x = 0
         self.player_y = 0
         self.weapons = {
@@ -160,6 +161,27 @@ class Game(cmd.Cmd):
             self.say_all(f"{self.nickname} attacked {name_monster} in ({x}, {y}), damage {damage} hp\n"
                          f"{name_monster} now has {new_hp}\n".encode())
 
+    def do_movemonsters(self, arg):
+        """
+        Включить или выключить режим бродячих монстров.
+
+        Использование: movemonsters on / movemonsters off
+        """
+        if arg == "on":
+            if (self.server.monsters_enabled
+                    and self.server.monsters_task
+                    and not self.server.monsters_task.done()):
+                self.writer.write(b"Moving monsters: on\n")
+            else:
+                self.server.monsters_enabled = True
+                self.server.monsters_task = asyncio.create_task(move_monsters_loop())
+                self.say_all(b"Moving monsters: on\n")
+        elif arg == "off":
+            if self.server.monsters_task and not self.server.monsters_task.done():
+                self.server.monsters_task.cancel()
+            self.server.monsters_enabled = False
+            self.say_all(b"Moving monsters: off\n")
+
 
 async def move_monsters_loop():
     """Циклическое перемещение монстров каждые 30 секунд."""
@@ -200,6 +222,8 @@ class Server:
         self.host = host
         self.port = port
         self.clients = dict()
+        self.monsters_task = None
+        self.monsters_enabled = True
 
     async def handle_client(self, reader, writer):
         """При подключении клиента, проверяем ник в системе и запускаем играть."""
@@ -219,7 +243,7 @@ class Server:
             writer.write(b"SUCCESS\n")
             await writer.drain()
 
-        game = Game(writer, username)
+        game = Game(self, writer, username)
         writer.game = game
         try:
             while True:
@@ -245,7 +269,7 @@ class Server:
         addr = ', '.join(str(sock.getsockname()) for sock in server.sockets)
         print(f'Working on {addr}')
 
-        # asyncio.create_task(move_monsters_loop())
+        self.monsters_task = asyncio.create_task(move_monsters_loop())
 
         async with server:
             await server.serve_forever()
