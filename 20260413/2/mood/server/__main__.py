@@ -1,10 +1,15 @@
-"""Сервер Python-MUD."""
+"""Сервер Python-MUD с поддержкой локализации."""
 from cowsay import cowthink
 import shlex
 import cmd
 import asyncio
+import gettext
+import os
 from ..common import HOST, PORT, FIELD_SIZE, CUSTOM_MONSTERS
 import random
+
+LOCALE_DIR = os.path.join(os.path.dirname(__file__), "locales")
+DEFAULT_LOCALE = "en_US.UTF8"
 
 monsters = {}
 users = dict()
@@ -14,6 +19,20 @@ DIRECTIONS = {
     "up": (0, -1),
     "down": (0, 1)
 }
+
+
+def get_translator(locale_str):
+    """Вернуть пару (gettext, ngettext) для заданной локали.
+
+    При отсутствии каталога — возвращает no-op функции.
+    """
+    try:
+        translator = gettext.translation(
+            'messages', LOCALE_DIR, languages=[locale_str])
+        return translator.gettext, translator.ngettext
+    except FileNotFoundError:
+        null = gettext.NullTranslations()
+        return null.gettext, null.ngettext
 
 
 class Game(cmd.Cmd):
@@ -38,6 +57,8 @@ class Game(cmd.Cmd):
         self.player_weapon = "sword"
         self.writer = writer
         self.nickname = nickname
+        self.locale = DEFAULT_LOCALE
+        self._, self.ngettext = get_translator(self.locale)
 
     def say_all(self, msg):
         """
@@ -160,6 +181,19 @@ class Game(cmd.Cmd):
             monsters[(x, y)] = (name_monster, hello, new_hp)
             self.say_all(f"{self.nickname} attacked {name_monster} in ({x}, {y}), damage {damage} hp\n"
                          f"{name_monster} now has {new_hp}\n".encode())
+
+    def do_locale(self, arg):
+        """
+        Установить локаль клиента.
+
+        Использование: locale <имя_локали> (например, ru_RU.UTF8).
+        """
+        args = shlex.split(arg)
+        locale_str = args[0] if args else DEFAULT_LOCALE
+        self.locale = locale_str
+        self._, self.ngettext = get_translator(self.locale)
+        self.writer.write(
+            self._("Set up locale: {}\n").format(self.locale).encode())
 
     def do_movemonsters(self, arg):
         """

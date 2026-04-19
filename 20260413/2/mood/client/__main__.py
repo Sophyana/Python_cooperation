@@ -12,7 +12,7 @@ from ..common import HOST, PORT, FIELD_SIZE, INTRO, CUSTOM_MONSTERS
 
 history = InMemoryHistory()
 commands = ["addmon", "attack", "up", "down", "left", "right",
-            "exit", "status", "sayall", "movemonsters"]
+            "exit", "status", "sayall", "movemonsters", "locale"]
 
 
 class DynamicCompleter(Completer):
@@ -45,6 +45,10 @@ class DynamicCompleter(Completer):
             case ["movemonsters"]:
                 for move_mon_arg in ["on", "off"]:
                     yield Completion(move_mon_arg, start_position=0)
+
+            case ["locale"]:
+                for loc in ["ru_RU.UTF8", "en_US.UTF8"]:
+                    yield Completion(loc, start_position=0)
 
             case[first]:
                 for cmd in commands:
@@ -191,6 +195,11 @@ class Client:
         if namecommand == "movemonsters":
             if len(test_command) != 2 or test_command[1] not in ("on", "off"):
                 print("Invalid arguments")
+                return
+
+        if namecommand == "locale":
+            if len(test_command) != 2:
+                print("Usage: locale <locale_name>")
                 return
 
         if namecommand in ["up", "down", "left", "right"] and len(test_command) != 1:

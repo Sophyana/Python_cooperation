@@ -8,6 +8,7 @@ python-cowsay = "*"
 prompt-toolkit = "*"
 sphinx = "*"
 sphinx-autodoc-typehints = "*"
+babel = "*"
 
 [dev-packages]
 
