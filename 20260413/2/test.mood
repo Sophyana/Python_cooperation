@@ -1,0 +1,5 @@
+up
+addmon eyes hello "dfgdghfgh" hp 10 coords 0 0
+down
+attack eyes with sword
+sayall GG
