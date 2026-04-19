@@ -231,9 +231,8 @@ class Game(cmd.Cmd):
         Использование: movemonsters on / movemonsters off
         """
         if arg == "on":
-            if (self.server.monsters_enabled
-                    and self.server.monsters_task
-                    and not self.server.monsters_task.done()):
+            task = self.server.monsters_task
+            if self.server.monsters_enabled and task and not task.done():
                 self.writer.write(self._("Moving monsters: on\n").encode())
             else:
                 self.server.monsters_enabled = True
