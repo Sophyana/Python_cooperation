@@ -35,6 +35,26 @@ def get_translator(locale_str):
         return null.gettext, null.ngettext
 
 
+def broadcast(msg, *args):
+    """Широковещательное сообщение с локализацией у каждого получателя."""
+    for client in users.values():
+        game = getattr(client, 'game', None)
+        if game is None:
+            continue
+        gettext_, _ngettext = get_translator(game.locale)
+        client.write(gettext_(msg).format(*args).encode())
+
+
+def broadcast_plural(singular, plural, n, *args):
+    """Широковещательное сообщение с учётом множественного числа."""
+    for client in users.values():
+        game = getattr(client, 'game', None)
+        if game is None:
+            continue
+        _gettext, ngettext_ = get_translator(game.locale)
+        client.write(ngettext_(singular, plural, n).format(*args).encode())
+
+
 class Game(cmd.Cmd):
     """
     Основной класс для выполнения команд игры.
@@ -60,15 +80,6 @@ class Game(cmd.Cmd):
         self.locale = DEFAULT_LOCALE
         self._, self.ngettext = get_translator(self.locale)
 
-    def say_all(self, msg):
-        """
-        Отобразить сообщение абсолютно всем.
-
-        Нужно для сообщений об убийстве моба и его создании.
-        """
-        for client in users.values():
-            client.write(msg)
-
     def do_sayall(self, message):
         """
         Отобразить сообщение всем, кроме пишущего.
@@ -81,12 +92,12 @@ class Game(cmd.Cmd):
 
     def do_exit(self, arg):
         """Выход из игры."""
-        self.writer.write(b"exit...\n")
+        self.writer.write(self._("exit...\n").encode())
         return b"exit\n"
 
     def do_status(self, arg):
         """Отобразить статус сервера для отладки."""
-        self.writer.write(b"Server work.\n")
+        self.writer.write(self._("Server work.\n").encode())
 
     def encounter(self, x, y):
         """Энкаунтер при встрече с монстром."""
@@ -106,7 +117,8 @@ class Game(cmd.Cmd):
         """
         self.player_x = (self.player_x + dx) % FIELD_SIZE
         self.player_y = (self.player_y + dy) % FIELD_SIZE
-        self.writer.write(f"Moved to ({self.player_x}, {self.player_y})\n".encode())
+        self.writer.write(self._("Moved to ({}, {})\n").format(
+            self.player_x, self.player_y).encode())
         self.encounter(self.player_x, self.player_y)
 
     def do_up(self, arg):
@@ -149,10 +161,20 @@ class Game(cmd.Cmd):
 
         replaced = (x, y) in monsters
         monsters[(x, y)] = (name, hello, hp)
-        self.say_all(f"{self.nickname} add a monster {name} at ({x}, {y}) saying '{hello}' with {hp} HP\n".encode())
         if replaced:
-            self.say_all(f"{self.nickname} replaced the old monster in ({x} {y}) to a monster {name}"
-                         f" at ({x}, {y}) saying '{hello}' with {hp} HP \n".encode())
+            broadcast_plural(
+                "{} replaced the old monster at ({}, {}) with a monster {} saying '{}' with {} health point\n",
+                "{} replaced the old monster at ({}, {}) with a monster {} saying '{}' with {} health points\n",
+                hp,
+                self.nickname, x, y, name, hello, hp,
+            )
+        else:
+            broadcast_plural(
+                "{} added a monster {} at ({}, {}) saying '{}' with {} health point\n",
+                "{} added a monster {} at ({}, {}) saying '{}' with {} health points\n",
+                hp,
+                self.nickname, name, x, y, hello, hp,
+            )
 
     def do_attack(self, arg):
         """Атаковать монстра с выбором оружия."""
@@ -163,24 +185,31 @@ class Game(cmd.Cmd):
 
         x, y = self.player_x, self.player_y
         if (x, y) not in monsters:
-            self.writer.write(b"No monster here\n")
+            self.writer.write(self._("No monster here\n").encode())
             return
 
         if name_monster not in monsters[(x, y)]:
-            self.writer.write(f"No {name_monster} here\n".encode())
+            self.writer.write(self._("No {} here\n").format(name_monster).encode())
             return
 
         name, hello, hp = monsters[(x, y)]
         new_hp = hp - damage
 
+        broadcast(
+            "{} attacked {} at ({}, {}), damage {} hp\n",
+            self.nickname, name_monster, x, y, damage,
+        )
         if new_hp <= 0:
             del monsters[(x, y)]
-            self.say_all(f"{self.nickname} attacked {name_monster} in ({x}, {y}), damage {damage} hp\n"
-                         f"{name_monster} died\n".encode())
+            broadcast("{} died\n", name_monster)
         else:
             monsters[(x, y)] = (name_monster, hello, new_hp)
-            self.say_all(f"{self.nickname} attacked {name_monster} in ({x}, {y}), damage {damage} hp\n"
-                         f"{name_monster} now has {new_hp}\n".encode())
+            broadcast_plural(
+                "{} now has {} health point\n",
+                "{} now has {} health points\n",
+                new_hp,
+                name_monster, new_hp,
+            )
 
     def do_locale(self, arg):
         """
@@ -205,16 +234,16 @@ class Game(cmd.Cmd):
             if (self.server.monsters_enabled
                     and self.server.monsters_task
                     and not self.server.monsters_task.done()):
-                self.writer.write(b"Moving monsters: on\n")
+                self.writer.write(self._("Moving monsters: on\n").encode())
             else:
                 self.server.monsters_enabled = True
                 self.server.monsters_task = asyncio.create_task(move_monsters_loop())
-                self.say_all(b"Moving monsters: on\n")
+                broadcast("Moving monsters: on\n")
         elif arg == "off":
             if self.server.monsters_task and not self.server.monsters_task.done():
                 self.server.monsters_task.cancel()
             self.server.monsters_enabled = False
-            self.say_all(b"Moving monsters: off\n")
+            broadcast("Moving monsters: off\n")
 
 
 async def move_monsters_loop():
@@ -236,9 +265,8 @@ async def move_monsters_loop():
                 continue
             del monsters[(old_x, old_y)]
             monsters[(new_x, new_y)] = (name, hello, hp)
-            monster_moved_massage = f"{name} moved one cell {direction}\n".encode()
+            broadcast("{} moved one cell {}\n", name, direction)
             for client in users.values():
-                client.write(monster_moved_massage)
                 player = getattr(client, 'game', None)
                 if player and player.player_x == new_x and player.player_y == new_y:
                     if name in CUSTOM_MONSTERS:
@@ -279,6 +307,7 @@ class Server:
 
         game = Game(self, writer, username)
         writer.game = game
+        broadcast("{} joined the game\n", username)
         try:
             while True:
                 msg = await reader.readline()
@@ -296,6 +325,7 @@ class Server:
             users.pop(username)
             writer.close()
             await writer.wait_closed()
+            broadcast("{} left the game\n", username)
 
     async def run(self):
         """Запуск сервера."""
