@@ -338,9 +338,16 @@ class Server:
             await server.serve_forever()
 
 
-if __name__ == '__main__':
+def run_server(host=HOST, port=PORT):
+    """Запустить сервер в синхронном контексте.
 
+    Используется в качестве target для multiprocessing.Process.
+    """
     try:
-        asyncio.run(Server().run())
+        asyncio.run(Server(host=host, port=port).run())
     except KeyboardInterrupt:
         print('Server stopped successfully.')
+
+
+if __name__ == '__main__':
+    run_server()
