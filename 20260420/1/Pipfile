@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-cowsay = "*"
+prompt-toolkit = "*"
+sphinx = "*"
+sphinx-autodoc-typehints = "*"
+babel = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"

@@ -1,0 +1,104 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-04-19 20:20+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: mood/server/__main__.py:95
+msgid "exit...\n"
+msgstr ""
+
+#: mood/server/__main__.py:100
+msgid "Server work.\n"
+msgstr ""
+
+#: mood/server/__main__.py:120
+#, python-brace-format
+msgid "Moved to ({}, {})\n"
+msgstr ""
+
+#: mood/server/__main__.py:166
+#, python-brace-format
+msgid ""
+"{} replaced the old monster at ({}, {}) with a monster {} saying '{}' "
+"with {} health point\n"
+msgid_plural ""
+"{} replaced the old monster at ({}, {}) with a monster {} saying '{}' "
+"with {} health points\n"
+msgstr[0] ""
+msgstr[1] ""
+
+#: mood/server/__main__.py:173
+#, python-brace-format
+msgid "{} added a monster {} at ({}, {}) saying '{}' with {} health point\n"
+msgid_plural "{} added a monster {} at ({}, {}) saying '{}' with {} health points\n"
+msgstr[0] ""
+msgstr[1] ""
+
+#: mood/server/__main__.py:188
+msgid "No monster here\n"
+msgstr ""
+
+#: mood/server/__main__.py:192
+#, python-brace-format
+msgid "No {} here\n"
+msgstr ""
+
+#: mood/server/__main__.py:199
+#, python-brace-format
+msgid "{} attacked {} at ({}, {}), damage {} hp\n"
+msgstr ""
+
+#: mood/server/__main__.py:204
+#, python-brace-format
+msgid "{} died\n"
+msgstr ""
+
+#: mood/server/__main__.py:208
+#, python-brace-format
+msgid "{} now has {} health point\n"
+msgid_plural "{} now has {} health points\n"
+msgstr[0] ""
+msgstr[1] ""
+
+#: mood/server/__main__.py:225
+#, python-brace-format
+msgid "Set up locale: {}\n"
+msgstr ""
+
+#: mood/server/__main__.py:237 mood/server/__main__.py:241
+msgid "Moving monsters: on\n"
+msgstr ""
+
+#: mood/server/__main__.py:246
+msgid "Moving monsters: off\n"
+msgstr ""
+
+#: mood/server/__main__.py:268
+#, python-brace-format
+msgid "{} moved one cell {}\n"
+msgstr ""
+
+#: mood/server/__main__.py:310
+#, python-brace-format
+msgid "{} joined the game\n"
+msgstr ""
+
+#: mood/server/__main__.py:328
+#, python-brace-format
+msgid "{} left the game\n"
+msgstr ""
+
