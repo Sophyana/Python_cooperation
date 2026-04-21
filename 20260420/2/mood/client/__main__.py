@@ -253,7 +253,7 @@ class Client:
             args = test_command[1:]
             weapons = {"sword", "spear", "axe"}
             try:
-                if "with" == args[2] and args[3] not in weapons:
+                if "with" == args[1] and args[2] not in weapons:
                     print("Unknown weapon")
                     return
             except IndexError:
