@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-19 20:20+0300\n"
+"POT-Creation-Date: 2026-04-28 14:30+0300\n"
 "PO-Revision-Date: 2026-04-19 20:20+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru_RU\n"
@@ -19,16 +19,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+#: mood/server/__main__.py:95
 msgid "exit...\n"
 msgstr "Выход...\n"
 
+#: mood/server/__main__.py:100
 msgid "Server work.\n"
 msgstr "Сервер работает.\n"
 
+#: mood/server/__main__.py:120
 #, python-brace-format
 msgid "Moved to ({}, {})\n"
 msgstr "Переместился на ({}, {})\n"
 
+#: mood/server/__main__.py:166
 #, python-brace-format
 msgid ""
 "{} replaced the old monster at ({}, {}) with a monster {} saying '{}' "
@@ -46,28 +50,40 @@ msgstr[2] ""
 "{} заменил старого монстра на ({}, {}) монстром {}, который говорит '{}' "
 "и имеет {} очков здоровья\n"
 
+#: mood/server/__main__.py:173
 #, python-brace-format
 msgid "{} added a monster {} at ({}, {}) saying '{}' with {} health point\n"
 msgid_plural "{} added a monster {} at ({}, {}) saying '{}' with {} health points\n"
-msgstr[0] "{} добавил монстра {} на ({}, {}), который говорит '{}' и имеет {} очко здоровья\n"
-msgstr[1] "{} добавил монстра {} на ({}, {}), который говорит '{}' и имеет {} очка здоровья\n"
-msgstr[2] "{} добавил монстра {} на ({}, {}), который говорит '{}' и имеет {} очков здоровья\n"
+msgstr[0] ""
+"{} добавил монстра {} на ({}, {}), который говорит '{}' и имеет {} очко "
+"здоровья\n"
+msgstr[1] ""
+"{} добавил монстра {} на ({}, {}), который говорит '{}' и имеет {} очка "
+"здоровья\n"
+msgstr[2] ""
+"{} добавил монстра {} на ({}, {}), который говорит '{}' и имеет {} очков "
+"здоровья\n"
 
+#: mood/server/__main__.py:188
 msgid "No monster here\n"
 msgstr "Здесь нет монстра\n"
 
+#: mood/server/__main__.py:192
 #, python-brace-format
 msgid "No {} here\n"
 msgstr "Здесь нет монстра по имени {}\n"
 
+#: mood/server/__main__.py:199
 #, python-brace-format
 msgid "{} attacked {} at ({}, {}), damage {} hp\n"
 msgstr "{} атаковал {} на ({}, {}), урон {} хп\n"
 
+#: mood/server/__main__.py:204
 #, python-brace-format
 msgid "{} died\n"
 msgstr "{} умер\n"
 
+#: mood/server/__main__.py:208
 #, python-brace-format
 msgid "{} now has {} health point\n"
 msgid_plural "{} now has {} health points\n"
@@ -75,24 +91,31 @@ msgstr[0] "У {} осталось {} очко здоровья\n"
 msgstr[1] "У {} осталось {} очка здоровья\n"
 msgstr[2] "У {} осталось {} очков здоровья\n"
 
+#: mood/server/__main__.py:225
 #, python-brace-format
 msgid "Set up locale: {}\n"
 msgstr "Установлена локаль: {}\n"
 
+#: mood/server/__main__.py:236 mood/server/__main__.py:240
 msgid "Moving monsters: on\n"
 msgstr "Бродячие монстры: включены\n"
 
+#: mood/server/__main__.py:245
 msgid "Moving monsters: off\n"
 msgstr "Бродячие монстры: выключены\n"
 
+#: mood/server/__main__.py:267
 #, python-brace-format
 msgid "{} moved one cell {}\n"
 msgstr "{} переместился на одну клетку {}\n"
 
+#: mood/server/__main__.py:309
 #, python-brace-format
 msgid "{} joined the game\n"
 msgstr "{} зашёл в игру\n"
 
+#: mood/server/__main__.py:327
 #, python-brace-format
 msgid "{} left the game\n"
 msgstr "{} покинул игру\n"
+

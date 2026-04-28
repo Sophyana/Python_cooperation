@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-19 20:20+0300\n"
+"POT-Creation-Date: 2026-04-28 14:30+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,25 +79,25 @@ msgstr[1] ""
 msgid "Set up locale: {}\n"
 msgstr ""
 
-#: mood/server/__main__.py:237 mood/server/__main__.py:241
+#: mood/server/__main__.py:236 mood/server/__main__.py:240
 msgid "Moving monsters: on\n"
 msgstr ""
 
-#: mood/server/__main__.py:246
+#: mood/server/__main__.py:245
 msgid "Moving monsters: off\n"
 msgstr ""
 
-#: mood/server/__main__.py:268
+#: mood/server/__main__.py:267
 #, python-brace-format
 msgid "{} moved one cell {}\n"
 msgstr ""
 
-#: mood/server/__main__.py:310
+#: mood/server/__main__.py:309
 #, python-brace-format
 msgid "{} joined the game\n"
 msgstr ""
 
-#: mood/server/__main__.py:328
+#: mood/server/__main__.py:327
 #, python-brace-format
 msgid "{} left the game\n"
 msgstr ""
