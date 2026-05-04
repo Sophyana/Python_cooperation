@@ -1,0 +1,16 @@
+[project]
+name="wordcount"
+description="Words counter"
+version="0.0.1"
+scripts = {wordcount = ".__main__:main"}
+
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-dir]
+wordcount="wordcount"
+
+[tool.setuptools.package-data]
+wordcount=["po/*/*/*.po"]

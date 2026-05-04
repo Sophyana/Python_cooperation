@@ -1,0 +1,12 @@
+MANIFEST.in
+pyproject.toml
+po/.DS_Store
+po/ru_RU.UTF-8/.DS_Store
+po/ru_RU.UTF-8/LC_MESSAGES/SWAN.po
+po/ru_RU.UTF-8/LC_MESSAGES/wordcount.po
+wordcount/__init__.py
+wordcount.egg-info/PKG-INFO
+wordcount.egg-info/SOURCES.txt
+wordcount.egg-info/dependency_links.txt
+wordcount.egg-info/top_level.txt
+wordcount/ru_RU.UTF-8/LC_MESSAGES/wordcount.mo
