@@ -1,0 +1,9 @@
+recursive-include mood/docs *
+include mood/test.mood
+include mood/server/locales/ru_RU/LC_MESSAGES/messages.mo
+include mood/server/locales/ru_RU/LC_MESSAGES/messages.po
+include mood/common/extra_monster.cow
+include test.mood
+include README.md
+recursive-include mood *.py
+recursive-include source *.rst *.py

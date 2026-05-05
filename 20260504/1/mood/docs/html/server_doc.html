@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Техническая документация &#8212; MOOD 09.04 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=5b444a49"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="MOOD Dungeon" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>Техническая документация<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<p>Документация модуля сервера MOOD.</p>
+<p id="module-mood.server.__main__">Сервер Python-MUD с поддержкой локализации.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mood.server.__main__.Game">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">mood.server.__main__.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nickname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Cmd</span></code></p>
+<p>Основной класс для выполнения команд игры.</p>
+<p>Этот класс отвечает за обработку команд пользователя
+и управление логикой игры.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_addmon">
+<span class="sig-name descname"><span class="pre">do_addmon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_addmon" title="Link to this definition">¶</a></dt>
+<dd><p>Добавить монстра на поле.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_attack">
+<span class="sig-name descname"><span class="pre">do_attack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_attack" title="Link to this definition">¶</a></dt>
+<dd><p>Атаковать монстра с выбором оружия.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_down">
+<span class="sig-name descname"><span class="pre">do_down</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_down" title="Link to this definition">¶</a></dt>
+<dd><p>Движение вниз.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_exit">
+<span class="sig-name descname"><span class="pre">do_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_exit" title="Link to this definition">¶</a></dt>
+<dd><p>Выход из игры.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_left">
+<span class="sig-name descname"><span class="pre">do_left</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_left" title="Link to this definition">¶</a></dt>
+<dd><p>Движение влево.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_locale">
+<span class="sig-name descname"><span class="pre">do_locale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_locale" title="Link to this definition">¶</a></dt>
+<dd><p>Установить локаль клиента.</p>
+<p>Использование: locale &lt;имя_локали&gt; (например, ru_RU.UTF8).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_movemonsters">
+<span class="sig-name descname"><span class="pre">do_movemonsters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_movemonsters" title="Link to this definition">¶</a></dt>
+<dd><p>Включить или выключить режим бродячих монстров.</p>
+<p>Использование: movemonsters on / movemonsters off</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_right">
+<span class="sig-name descname"><span class="pre">do_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_right" title="Link to this definition">¶</a></dt>
+<dd><p>Движение вправо.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_sayall">
+<span class="sig-name descname"><span class="pre">do_sayall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_sayall" title="Link to this definition">¶</a></dt>
+<dd><p>Отобразить сообщение всем, кроме пишущего.</p>
+<p>Нужно для чатика.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_status">
+<span class="sig-name descname"><span class="pre">do_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_status" title="Link to this definition">¶</a></dt>
+<dd><p>Отобразить статус сервера для отладки.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.do_up">
+<span class="sig-name descname"><span class="pre">do_up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.do_up" title="Link to this definition">¶</a></dt>
+<dd><p>Движение вверх.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.encounter">
+<span class="sig-name descname"><span class="pre">encounter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.encounter" title="Link to this definition">¶</a></dt>
+<dd><p>Энкаунтер при встрече с монстром.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Game.move_player">
+<span class="sig-name descname"><span class="pre">move_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Game.move_player" title="Link to this definition">¶</a></dt>
+<dd><p>Общая функция передвижения игрока по полю.</p>
+<p>Она получает только изменения координат dx, dy от команд
+up, down, left, right.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mood.server.__main__.Server">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">mood.server.__main__.</span></span><span class="sig-name descname"><span class="pre">Server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8888</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Server" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Сервер.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Server.handle_client">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handle_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Server.handle_client" title="Link to this definition">¶</a></dt>
+<dd><p>При подключении клиента, проверяем ник в системе и запускаем играть.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mood.server.__main__.Server.run">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.Server.run" title="Link to this definition">¶</a></dt>
+<dd><p>Запуск сервера.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mood.server.__main__.broadcast">
+<span class="sig-prename descclassname"><span class="pre">mood.server.__main__.</span></span><span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.broadcast" title="Link to this definition">¶</a></dt>
+<dd><p>Широковещательное сообщение с локализацией у каждого получателя.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mood.server.__main__.broadcast_plural">
+<span class="sig-prename descclassname"><span class="pre">mood.server.__main__.</span></span><span class="sig-name descname"><span class="pre">broadcast_plural</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">singular</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plural</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.broadcast_plural" title="Link to this definition">¶</a></dt>
+<dd><p>Широковещательное сообщение с учётом множественного числа.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mood.server.__main__.get_translator">
+<span class="sig-prename descclassname"><span class="pre">mood.server.__main__.</span></span><span class="sig-name descname"><span class="pre">get_translator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locale_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.get_translator" title="Link to this definition">¶</a></dt>
+<dd><p>Вернуть пару (gettext, ngettext) для заданной локали.</p>
+<p>При отсутствии каталога — возвращает no-op функции.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mood.server.__main__.move_monsters_loop">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">mood.server.__main__.</span></span><span class="sig-name descname"><span class="pre">move_monsters_loop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.move_monsters_loop" title="Link to this definition">¶</a></dt>
+<dd><p>Циклическое перемещение монстров каждые 30 секунд.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mood.server.__main__.run_server">
+<span class="sig-prename descclassname"><span class="pre">mood.server.__main__.</span></span><span class="sig-name descname"><span class="pre">run_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8888</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mood.server.__main__.run_server" title="Link to this definition">¶</a></dt>
+<dd><p>Запустить сервер в синхронном контексте.</p>
+<p>Используется в качестве target для multiprocessing.Process.</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MOOD</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Техническая документация</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">MOOD Dungeon</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Bagrov Aleksandr.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/server_doc.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

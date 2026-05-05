@@ -6,11 +6,14 @@ name = "pypi"
 [packages]
 python-cowsay = "*"
 prompt-toolkit = "*"
-sphinx = "*"
-sphinx-autodoc-typehints = "*"
 babel = "*"
 
 [dev-packages]
+build = "*"
+doit = "*"
+sphinx = "*"
+sphinx-autodoc-typehints = "*"
+wheel = "*"
 
 [requires]
 python_version = "3.12"

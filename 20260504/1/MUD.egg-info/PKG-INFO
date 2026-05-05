@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: MUD
+Version: 0.1.0
+Summary: MUD client-server game
+Author-email: Sophyana <sophya_esaulenko@mail.ru>
+Requires-Python: >=3.11
+Requires-Dist: python-cowsay>=1.2.0
+Requires-Dist: prompt_toolkit>=3.0.50
+Requires-Dist: babel>=2.17.0

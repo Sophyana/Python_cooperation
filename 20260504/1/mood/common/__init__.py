@@ -1,4 +1,5 @@
 """Модуль общих констант."""
+import os
 from io import StringIO
 from cowsay import read_dot_cow
 
@@ -19,3 +20,8 @@ CUSTOM_MONSTERS = {"jgsbat": read_dot_cow(StringIO(r"""
                  (((""`  `"")))
         EOC
         """))}
+
+_EXTRA_MONSTER_FILE = os.path.join(os.path.dirname(__file__), "extra_monster.cow")
+if os.path.exists(_EXTRA_MONSTER_FILE):
+    with open(_EXTRA_MONSTER_FILE) as _f:
+        CUSTOM_MONSTERS["pinguin"] = read_dot_cow(_f)

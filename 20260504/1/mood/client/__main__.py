@@ -1,8 +1,10 @@
 """Модуль клиента с проверкой аргументов команд и их дополнением."""
 from cowsay import list_cows
+import os
 import shlex
 import sys
 import asyncio
+import webbrowser
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.completion import Completer, Completion
@@ -12,7 +14,24 @@ from ..common import HOST, PORT, FIELD_SIZE, INTRO, CUSTOM_MONSTERS
 
 history = InMemoryHistory()
 commands = ["addmon", "attack", "up", "down", "left", "right",
-            "exit", "status", "sayall", "movemonsters", "locale"]
+            "exit", "status", "sayall", "movemonsters", "locale",
+            "documentation"]
+
+
+def open_documentation():
+    """Открыть в браузере html-документацию из пакета."""
+    pkg_root = os.path.dirname(os.path.dirname(__file__))
+    candidates = [
+        os.path.join(pkg_root, "docs", "html", "index.html"),
+        os.path.join(pkg_root, "..", "build", "html", "index.html"),
+    ]
+    for path in candidates:
+        path = os.path.abspath(path)
+        if os.path.exists(path):
+            webbrowser.open(f"file://{path}")
+            return True
+    print("Documentation not found. Run `doit html` first.")
+    return False
 
 
 class DynamicCompleter(Completer):
@@ -187,6 +206,10 @@ class Client:
             print("Unknown command")
             return
 
+        if namecommand == "documentation":
+            open_documentation()
+            return
+
         if command == "sayall":
             if len(test_command) != 2:
                 print("Invalid arguments")
@@ -264,7 +287,8 @@ class Client:
         await self.writer.drain()
 
 
-if __name__ == '__main__':
+def run_client():
+    """Точка входа клиента (используется в [project.scripts])."""
     file_commands = None
     if '--file' in sys.argv:
         file_index = sys.argv.index('--file') + 1
@@ -280,3 +304,7 @@ if __name__ == '__main__':
         asyncio.run(Client(username, file_commands).run())
     except KeyboardInterrupt:
         print('Client stopped manually.')
+
+
+if __name__ == '__main__':
+    run_client()

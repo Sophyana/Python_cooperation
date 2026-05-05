@@ -1,0 +1,6 @@
+build>=1.2.0
+doit>=0.36.0
+Sphinx>=7.0
+sphinx-autodoc-typehints>=2.0
+wheel>=0.45
+babel>=2.17.0

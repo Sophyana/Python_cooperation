@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "MUD"
+version = "0.1.0"
+description = "MUD client-server game"
+authors = [{name = "Sophyana", email = "sophya_esaulenko@mail.ru"}]
+requires-python = ">=3.11"
+
+dependencies = [
+    "python-cowsay>=1.2.0",
+    "prompt_toolkit>=3.0.50",
+    "babel>=2.17.0",
+]
+
+[project.scripts]
+mood-server = "mood.server.__main__:run_server"
+mood-client = "mood.client.__main__:run_client"
+
+[tool.setuptools]
+packages = ["mood", "mood.client", "mood.server", "mood.common"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"mood" = [
+    "server/locales/**/*.mo",
+    "server/locales/**/*.po",
+    "common/*.cow",
+    "docs/**/*",
+    "test.mood",
+]
