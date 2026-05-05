@@ -28,6 +28,7 @@ class TestMudServer(unittest.IsolatedAsyncioTestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Поднять сервер в отдельном процессе перед всеми тестами."""
         cls.server_process = multiprocessing.Process(
             target=run_server, kwargs={"host": HOST, "port": PORT}, daemon=True)
         cls.server_process.start()
@@ -35,10 +36,12 @@ class TestMudServer(unittest.IsolatedAsyncioTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """Остановить серверный процесс после всех тестов."""
         cls.server_process.terminate()
         cls.server_process.join()
 
     async def asyncSetUp(self):
+        """Открыть соединение и зарегистрироваться под ником priest."""
         self.reader, self.writer = await asyncio.open_connection(HOST, PORT)
         self.writer.write(b"priest\n")
         await self.writer.drain()
@@ -46,6 +49,7 @@ class TestMudServer(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response, "SUCCESS")
 
     async def asyncTearDown(self):
+        """Закрыть соединение клиента."""
         self.writer.close()
         await self.writer.wait_closed()
 
@@ -64,6 +68,7 @@ class TestMudServer(unittest.IsolatedAsyncioTestCase):
         return "".join(buffer)
 
     async def send_command(self, command):
+        """Отправить команду и вернуть ответ сервера."""
         self.writer.write(f"{command}\n".encode())
         await self.writer.drain()
         return await self.read_full_response()

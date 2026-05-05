@@ -22,7 +22,8 @@ DIRECTIONS = {
 
 
 def get_translator(locale_str):
-    """Вернуть пару (gettext, ngettext) для заданной локали.
+    """
+    Вернуть пару (gettext, ngettext) для заданной локали.
 
     При отсутствии каталога — возвращает no-op функции.
     """
@@ -339,7 +340,8 @@ class Server:
 
 
 def run_server(host=HOST, port=PORT):
-    """Запустить сервер в синхронном контексте.
+    """
+    Запустить сервер в синхронном контексте.
 
     Используется в качестве target для multiprocessing.Process.
     """
